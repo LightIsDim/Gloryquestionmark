@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FILECORE — Private Storage</title>
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-mark">◈</div>
+
+            <div>
+                <div class="brand-name">FILECORE</div>
+                <div class="brand-subtitle">
+                    PRIVATE STORAGE
+                </div>
+            </div>
+        </div>
+
+        <nav>
+            <div class="nav-label">STORAGE</div>
+
+            <button class="nav-item active" id="nav-files">
+                <span>◉</span>
+                Files
+            </button>
+
+            <button class="nav-item" id="nav-recent">
+                <span>◌</span>
+                Recent
+            </button>
+
+            <div class="nav-label system-label">
+                SYSTEM
+            </div>
+
+            <button class="nav-item" id="nav-activity">
+                <span>⌁</span>
+                Activity
+            </button>
+
+            <button class="nav-item" id="nav-storage">
+                <span>▣</span>
+                Storage
+            </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="online">
+                <span class="online-dot"></span>
+                ONLINE
+            </div>
+
+            <div class="server-info">
+                <span>FS</span>
+                <code id="storage-path">/storage</code>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <button
+                class="mobile-menu"
+                id="mobile-menu"
+            >
+                ☰
+            </button>
+
+            <div class="top-title">
+                <span class="status-dot"></span>
+                STORAGE NODE
+            </div>
+
+            <div class="top-actions">
+
+                <button
+                    class="icon-button"
+                    id="refresh-btn"
+                    title="Refresh"
+                >
+                    ↻
+                </button>
+
+                <div class="user-badge">
+                    SYS
+                </div>
+
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <div class="page-head">
+
+                <div>
+
+                    <div class="eyebrow">
+                        FILESYSTEM
+                    </div>
+
+                    <h1>FILES</h1>
+
+                    <div
+                        class="breadcrumb"
+                        id="breadcrumb"
+                    ></div>
+
+                </div>
+
+                <div class="actions">
+
+                    <button
+                        class="button secondary"
+                        id="new-folder"
+                    >
+                        + NEW FOLDER
+                    </button>
+
+                    <button
+                        class="button primary"
+                        id="upload-button"
+                    >
+                        ↑ UPLOAD
+                    </button>
+
+                    <input
+                        type="file"
+                        id="file-input"
+                        multiple
+                        hidden
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="search-bar">
+
+                <span>⌕</span>
+
+                <input
+                    type="search"
+                    id="search-input"
+                    placeholder="Search files..."
+                >
+
+                <span class="shortcut">
+                    /
+                </span>
+
+            </div>
+
+            <div class="storage-panel">
+
+                <div class="storage-heading">
+                    <div>
+                        <div class="panel-label">
+                            STORAGE
+                        </div>
+
+                        <div
+                            class="storage-value"
+                            id="storage-value"
+                        >
+                            --
+                        </div>
+                    </div>
+
+                    <div class="storage-meta">
+                        <div>
+                            USED
+                            <strong id="storage-used">
+                                --
+                            </strong>
+                        </div>
+
+                        <div>
+                            FREE
+                            <strong id="storage-free">
+                                --
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress">
+                    <div
+                        class="progress-fill"
+                        id="storage-progress"
+                    ></div>
+                </div>
+
+            </div>
+
+            <div class="toolbar">
+
+                <div class="toolbar-left">
+
+                    <button
+                        class="toolbar-button"
+                        id="up-button"
+                    >
+                        ↑ UP
+                    </button>
+
+                    <span
+                        class="selection-info"
+                        id="selection-info"
+                    ></span>
+
+                </div>
+
+                <div class="view-buttons">
+
+                    <button
+                        class="view-button active"
+                        id="list-view"
+                    >
+                        ▤
+                    </button>
+
+                    <button
+                        class="view-button"
+                        id="grid-view"
+                    >
+                        ▦
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div
+                class="file-list"
+                id="file-list"
+            ></div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- Context menu -->
+
+<div
+    class="context-menu"
+    id="context-menu"
+>
+    <button data-action="open">Open</button>
+    <button data-action="download">Download</button>
+    <button data-action="rename">Rename</button>
+    <button data-action="move">Move</button>
+    <button data-action="properties">Properties</button>
+    <div class="menu-separator"></div>
+    <button
+        data-action="delete"
+        class="danger"
+    >
+        Delete
+    </button>
+</div>
+
+
+<!-- Modal -->
+
+<div
+    class="modal-backdrop"
+    id="modal-backdrop"
+>
+
+    <div
+        class="modal"
+        id="modal"
+    ></div>
+
+</div>
+
+
+<!-- Toast -->
+
+<div
+    class="toast-container"
+    id="toast-container"
+></div>
+
+
+<script src="/app.js"></script>
+
+</body>
+</html>

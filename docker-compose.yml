@@ -1,0 +1,25 @@
+services:
+
+  file-manager:
+    build: .
+
+    container_name: filecore
+
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./storage:/storage
+
+    # Give the container enough temporary space for
+    # multipart processing.
+    tmpfs:
+      - /tmp:size=512m
+
+    security_opt:
+      - no-new-privileges:true
