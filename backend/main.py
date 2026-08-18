@@ -1538,3 +1538,64 @@ app.mount(
     ),
     name="frontend",
 )
+
+# WHASRGKS[PODFHGBIB
+@app.get(
+    "/api/recent",
+    dependencies=[Depends(require_auth)],
+)
+def recent_files(
+    limit: int = Query(
+        30,
+        ge=1,
+        le=100,
+    ),
+):
+    """
+    Return recently modified filesystem entries.
+
+    No database/index is used.
+    """
+
+    results = []
+
+    for root, dirs, filenames in os.walk(
+        STORAGE_PATH,
+        followlinks=False,
+    ):
+        dirs[:] = [
+            d
+            for d in dirs
+            if d not in {
+                SYSTEM_DIR_NAME,
+                UPLOADS_DIR_NAME,
+            }
+        ]
+
+        entries = (
+            [Path(root) / d for d in dirs]
+            +
+            [Path(root) / f for f in filenames]
+        )
+
+        for entry in entries:
+
+            try:
+                if entry.is_symlink():
+                    continue
+
+                results.append(
+                    file_metadata(entry)
+                )
+
+            except OSError:
+                continue
+
+    results.sort(
+        key=lambda item: item["modified"],
+        reverse=True,
+    )
+
+    return {
+        "items": results[:limit],
+    }

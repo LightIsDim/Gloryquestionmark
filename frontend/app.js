@@ -1472,7 +1472,251 @@ document.addEventListener(
         }
     }
 );
+// ============================================================
+// SIDEBAR NAVIGATION
+// ============================================================
 
+const navFiles = $("#nav-files");
+const navRecent = $("#nav-recent");
+const navActivity = $("#nav-activity");
+const navStorage = $("#nav-storage");
+
+const systemView = $("#system-view");
+
+function setActiveNav(activeButton) {
+    document
+        .querySelectorAll(".nav-item")
+        .forEach((button) => {
+            button.classList.remove("active");
+        });
+
+    activeButton.classList.add("active");
+}
+
+function showFilesView() {
+    systemView.hidden = true;
+    fileList.style.display = "";
+    $(".toolbar").style.display = "";
+    $(".storage-panel").style.display = "";
+    $(".search-bar").style.display = "";
+    $(".page-head").style.display = "";
+
+    setActiveNav(navFiles);
+
+    loadDirectory(state.currentPath);
+}
+
+function showSystemView() {
+    fileList.style.display = "none";
+    $(".toolbar").style.display = "none";
+    $(".storage-panel").style.display = "none";
+    $(".search-bar").style.display = "none";
+    $(".page-head").style.display = "none";
+
+    systemView.hidden = false;
+}
+
+navFiles.addEventListener(
+    "click",
+    () => {
+        showFilesView();
+    }
+);
+
+navRecent.addEventListener(
+    "click",
+    async () => {
+        setActiveNav(navRecent);
+        showSystemView();
+
+        await renderRecent();
+    }
+);
+
+navActivity.addEventListener(
+    "click",
+    async () => {
+        setActiveNav(navActivity);
+        showSystemView();
+
+        await renderActivity();
+    }
+);
+
+navStorage.addEventListener(
+    "click",
+    async () => {
+        setActiveNav(navStorage);
+        showSystemView();
+
+        await renderStoragePage();
+    }
+);
+// ============================================================
+// RECENT
+// ============================================================
+
+async function renderRecent() {
+    systemView.innerHTML = `
+        <div class="system-header">
+
+            <div>
+                <div class="eyebrow">
+                    STORAGE / RECENT
+                </div>
+
+                <h2>RECENT FILES</h2>
+
+                <div class="system-description">
+                    Files and folders most recently modified
+                    on the filesystem.
+                </div>
+            </div>
+
+            <button
+                class="button secondary"
+                id="recent-refresh"
+            >
+                ↻ REFRESH
+            </button>
+
+        </div>
+
+        <div id="recent-content">
+            <div class="system-empty">
+                LOADING...
+            </div>
+        </div>
+    `;
+
+    $("#recent-refresh").addEventListener(
+        "click",
+        renderRecent
+    );
+
+    try {
+        /*
+         * We intentionally get the filesystem tree directly.
+         * No database/index is required.
+         */
+        const data = await api(
+            "/api/search?q=."
+        );
+
+        let items = data.results || [];
+
+        /*
+         * The search endpoint is designed for name search,
+         * so filter it here and sort using modified timestamps.
+         */
+        items = items
+            .filter(item => item.name)
+            .sort(
+                (a, b) =>
+                    new Date(b.modified) -
+                    new Date(a.modified)
+            )
+            .slice(0, 30);
+
+        if (!items.length) {
+            $("#recent-content").innerHTML = `
+                <div class="system-empty">
+                    NO RECENT FILES
+                </div>
+            `;
+
+            return;
+        }
+
+        $("#recent-content").innerHTML = `
+            <table class="system-table">
+
+                <thead>
+                    <tr>
+                        <th>ITEM</th>
+                        <th>TYPE</th>
+                        <th>SIZE</th>
+                        <th>MODIFIED</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${items.map(item => `
+                        <tr>
+
+                            <td>
+                                <div style="
+                                    display:flex;
+                                    align-items:center;
+                                    gap:11px;
+                                ">
+
+                                    <div class="recent-icon">
+                                        ${iconFor(item)}
+                                    </div>
+
+                                    <div>
+                                        <div class="recent-name">
+                                            ${escapeHtml(item.name)}
+                                        </div>
+
+                                        <div class="recent-location">
+                                            /${escapeHtml(item.path)}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(item.type)}
+                            </td>
+
+                            <td>
+                                ${
+                                    item.is_dir
+                                        ? "DIRECTORY"
+                                        : formatBytes(item.size)
+                                }
+                            </td>
+
+                            <td>
+                                ${formatDate(item.modified)}
+                            </td>
+
+                            <td>
+                                <button
+                                    class="toolbar-button"
+                                    onclick="openItem(
+                                        '${escapeHtml(item.path)}',
+                                        ${item.is_dir}
+                                    )"
+                                >
+                                    OPEN
+                                </button>
+                            </td>
+
+                        </tr>
+                    `).join("")}
+                </tbody>
+
+            </table>
+        `;
+
+    } catch (error) {
+        $("#recent-content").innerHTML = `
+            <div class="system-empty">
+                FAILED TO LOAD RECENT FILES
+            </div>
+        `;
+
+        showToast(
+            error.message,
+            true
+        );
+    }
+}
 
 // ============================================================
 // INIT

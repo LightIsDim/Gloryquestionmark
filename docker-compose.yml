@@ -22,4 +22,5 @@ services:
       - /tmp:size=512m
 
     security_opt:
-      - no-new-privileges:true
+#      - no-new-privileges:true
+        - seccomp:unconfined
